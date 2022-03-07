@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Movie</string>
+    <string name="imdb">IMDB</string>
+    <string name="connection_problem">Connection Problem!!</string>
+    <string name="please_wait">Please wait&#8230;</string>
+    <string name="search_movies">Search movies</string>
+    <string name="error_message_server">There was a problem connecting to the server. Please try again</string>
 </resources>
