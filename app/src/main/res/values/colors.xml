@@ -19,4 +19,6 @@
     <color name="silver">#cdd5db</color>
     <color name="color_red">#f84f50</color>
     <color name="color_yellow">#EAD200</color>
+    <color name="colorText81">#818181</color>
+    <color name="colorText39">#393939</color>
 </resources>

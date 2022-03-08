@@ -10,4 +10,7 @@
     <string name="runtime">Runtime: </string>
     <string name="description">Description: </string>
     <string name="favorite_movies_empty">Favorite list movies is empty!</string>
+    <string name="ok">Ok</string>
+    <string name="movie_not_found">Movie not found!</string>
+    <string name="your_favorite_films">Your favorite films</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.coding.movie.ui.movie;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +10,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,8 +27,11 @@ import com.coding.movie.model.ErrorWebModel;
 import com.coding.movie.model.search.SearchMoviesWebModels;
 import com.coding.movie.ui.imdb.ImdbActivity;
 import com.coding.movie.utils.WebServiceHelper;
+import com.google.android.material.button.MaterialButton;
+import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -37,8 +45,6 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
     ImageView btnBack;
     @BindView(R.id.btn_add_favorite)
     ImageButton btnAddFavorite;
-    @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
     @BindView(R.id.iv_movie_poster)
     ImageView ivMoviePoster;
     @BindView(R.id.tv_movie_title)
@@ -48,7 +54,7 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
     @BindView(R.id.tv_movie_description)
     TextView tvMovieDescription;
     private FavDB favDB;
-    private String imdbId, poster;
+    private String imdbId, poster, title, rating, desc;
     private Boolean favStatus = false;
     private MovieFavItem favItem;
     private ArrayList<MovieFavItem> movieFavItemArrayList;
@@ -108,37 +114,48 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
         btnAddFavorite.setEnabled(true);
         if (searchMoviesWebModels.getImdbID() != null) {
             imdbId = searchMoviesWebModels.getImdbID();
-        }
+        } else imdbId = "";
         if (searchMoviesWebModels.getPoster() != null) {
             poster = searchMoviesWebModels.getPoster();
-        }
+        } else poster = "";
         if (poster.length() > 10) {
             Glide.with(mContext)
                     .load(searchMoviesWebModels.getPoster())
                     .into(ivMoviePoster);
         }
-        String title = searchMoviesWebModels.getTitle();
-        tvMovieTitle.setText(title);
-        String rating = searchMoviesWebModels.getImdbRating();
+
+        if (searchMoviesWebModels.getTitle() != null && searchMoviesWebModels.getTitle().length() > 0) {
+            title = searchMoviesWebModels.getTitle();
+            tvMovieTitle.setText(title);
+        } else {
+            title = "";
+            WebServiceHelper.dialogBox(getResources().getString(R.string.movie_not_found), mActivity, mContext);
+        }
+        rating = searchMoviesWebModels.getImdbRating();
+        if (searchMoviesWebModels.getImdbRating() != null) {
+            rating = searchMoviesWebModels.getImdbRating();
+        } else rating = "";
         tvMovieRating.setText(rating);
-        String desc = searchMoviesWebModels.getPlot();
+        if (searchMoviesWebModels.getPlot() != null) {
+            desc = searchMoviesWebModels.getPlot();
+        } else desc = "";
         tvMovieDescription.setText(desc);
         movieFavItemArrayList = new ArrayList<>();
         movieFavItemArrayList = favDB.search(imdbId);
 
-        if (movieFavItemArrayList!=null) {
+        if (movieFavItemArrayList != null) {
             int s = movieFavItemArrayList.size();
 
-        for (int i = 0; i < s; i++) {
-            String idSearch = movieFavItemArrayList.get(i).getKey_id();
-            if (idSearch.equals(imdbId)) {
-                btnAddFavorite.setImageResource(R.drawable.ic_favorite_red);
-                favStatus = true;
-            } else {
-                btnAddFavorite.setImageResource(R.drawable.ic_favorite_withe);
-                favStatus = false;
+            for (int i = 0; i < s; i++) {
+                String idSearch = movieFavItemArrayList.get(i).getKey_id();
+                if (idSearch.equals(imdbId)) {
+                    btnAddFavorite.setImageResource(R.drawable.ic_favorite_red);
+                    favStatus = true;
+                } else {
+                    btnAddFavorite.setImageResource(R.drawable.ic_favorite_withe);
+                    favStatus = false;
+                }
             }
-        }
         }
         favItem = new MovieFavItem(poster, title, imdbId, favStatus.toString(), rating, desc);
     }
@@ -170,13 +187,14 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
 
     @Override
     public void onWebServiceError() {
-        WebServiceHelper.showDialogError(getResources().getString(R.string.error_message_server)
-                , mActivity, mContext);
+
+        WebServiceHelper.dialogBox(getResources().getString(R.string.error_message_server), mActivity, mContext);
     }
 
     @Override
     public void onWebResponseError(ErrorWebModel error) {
-        WebServiceHelper.showDialogError(error.getMessage(), mActivity, mContext);
+
+        WebServiceHelper.dialogBox(error.getMessage(), mActivity, mContext);
     }
 
 }

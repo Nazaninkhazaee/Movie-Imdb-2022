@@ -40,8 +40,8 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View {
     ImageView btnSearch;
     @BindView(R.id.tv_toolbar)
     TextView tvToolbar;
-    @BindView(R.id.tv_error)
-    TextView tvError;
+    @BindView(R.id.tv_favorite_movies)
+    TextView tvFavoriteMovies;
     @BindView(R.id.rv_movie_list)
     RecyclerView rvMovieList;
     @BindView(R.id.et_search)
@@ -71,15 +71,16 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View {
         rvMovieList.setHasFixedSize(true);
         rvMovieList.setLayoutManager(new LinearLayoutManager(mContext));
         favDB = new FavDB(mContext);
-//        favDB.deleteDatabase(mContext);
         movieFavItemArrayList = new ArrayList<>();
         movieFavItemArrayList = favDB.readCourses();
         int size = movieFavItemArrayList.size();
         if (size == 0) {
             rvMovieList.setVisibility(View.INVISIBLE);
+            tvFavoriteMovies.setVisibility(View.INVISIBLE);
             tvEmpty.setVisibility(View.VISIBLE);
         } else {
             tvEmpty.setVisibility(View.INVISIBLE);
+            tvFavoriteMovies.setVisibility(View.VISIBLE);
             rvMovieList.setVisibility(View.VISIBLE);
         }
         adapter = new FavAdapter(movieFavItemArrayList, mContext, new FavAdapter.OnItemClickListener() {
@@ -140,13 +141,14 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View {
 
     @Override
     public void onWebServiceError() {
-        WebServiceHelper.showDialogError(getResources().getString(R.string.error_message_server)
+        WebServiceHelper.dialogBox(getResources().getString(R.string.error_message_server)
                 , mActivity, mContext);
+
     }
 
     @Override
     public void onWebResponseError(ErrorWebModel error) {
-        WebServiceHelper.showDialogError(error.getMessage(), mActivity, mContext);
+        WebServiceHelper.dialogBox(error.getMessage(), mActivity, mContext);
     }
 
 }
