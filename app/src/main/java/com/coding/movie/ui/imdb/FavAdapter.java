@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,17 +20,23 @@ import com.coding.movie.data.FavDB;
 import com.coding.movie.data.MovieFavItem;
 
 import java.util.ArrayList;
-
 public class FavAdapter extends RecyclerView.Adapter<FavAdapter.ViewHolder> {
 
     private ArrayList<MovieFavItem> movieFavItemArrayList;
     private Context context;
+    private final OnItemClickListener listener;
 
 
-    public FavAdapter(ArrayList<MovieFavItem> movieFavItemArrayList, Context context) {
+    public FavAdapter(ArrayList<MovieFavItem> movieFavItemArrayList, Context context, OnItemClickListener listener) {
         this.movieFavItemArrayList = movieFavItemArrayList;
         this.context = context;
+        this.listener = listener;
     }
+
+    public interface OnItemClickListener {
+        void onItemClick(MovieFavItem movieFavItemArrayList);
+    }
+
 
     @NonNull
     @Override
@@ -51,6 +58,12 @@ public class FavAdapter extends RecyclerView.Adapter<FavAdapter.ViewHolder> {
             Glide.with(context)
                     .load(poster)
                     .into(holder.ivPoster);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(movieFavItemArrayList.get(i));
+            }
+        });
         }
 
 //

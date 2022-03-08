@@ -22,15 +22,17 @@ import com.coding.movie.model.ErrorWebModel;
 import com.coding.movie.model.search.SearchMoviesWebModels;
 import com.coding.movie.ui.imdb.ImdbActivity;
 import com.coding.movie.utils.WebServiceHelper;
-import com.orhanobut.hawk.Hawk;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MovieActivity extends BaseActivity implements MovieContract.View {
+
+    //#region BindView
     MovieContract.Presenter presenter;
     private String movieName;
-    //#region BindView
     @BindView(R.id.btn_back)
     ImageView btnBack;
     @BindView(R.id.btn_add_favorite)
@@ -46,10 +48,11 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
     @BindView(R.id.tv_movie_description)
     TextView tvMovieDescription;
     private FavDB favDB;
-    private String imdbId = "";
-    private String poster = "";
+    private String imdbId, poster;
     private Boolean favStatus = false;
     private MovieFavItem favItem;
+    private ArrayList<MovieFavItem> movieFavItemArrayList;
+    //endregion
 
 
     @Override
@@ -69,6 +72,7 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
         btnAddFavorite.setEnabled(false);
         favDB = new FavDB(mContext);
         presenter.search(movieName);
+
     }
 
     //#region click
@@ -84,18 +88,16 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
         if (favStatus) {
             btnAddFavorite.setImageResource(R.drawable.ic_favorite_withe);
             favStatus = false;
-            Hawk.delete(imdbId);
             favDB.remove_fav(favItem.getKey_id());
+
         } else {
             btnAddFavorite.setImageResource(R.drawable.ic_favorite_red);
             favStatus = true;
-            Hawk.put("MovieId", imdbId);
-
             favDB.insertIntoTheDatabase(
                     favItem.getImageResourse(),
                     favItem.getTitle(),
                     favItem.getKey_id(),
-                    favItem.getFavStatus().toString(),
+                    favItem.getFavStatus(),
                     favItem.getRating(),
                     favItem.getDesc());
         }
@@ -121,15 +123,23 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
         tvMovieRating.setText(rating);
         String desc = searchMoviesWebModels.getPlot();
         tvMovieDescription.setText(desc);
-        String movieId = Hawk.get("MovieId", "");
-        if (movieId != null && movieId.equals(imdbId)) {
-            btnAddFavorite.setImageResource(R.drawable.ic_favorite_red);
-            favStatus = true;
-        } else {
-            btnAddFavorite.setImageResource(R.drawable.ic_favorite_withe);
-            favStatus = false;
-        }
+        movieFavItemArrayList = new ArrayList<>();
+        movieFavItemArrayList = favDB.search(imdbId);
 
+        if (movieFavItemArrayList!=null) {
+            int s = movieFavItemArrayList.size();
+
+        for (int i = 0; i < s; i++) {
+            String idSearch = movieFavItemArrayList.get(i).getKey_id();
+            if (idSearch.equals(imdbId)) {
+                btnAddFavorite.setImageResource(R.drawable.ic_favorite_red);
+                favStatus = true;
+            } else {
+                btnAddFavorite.setImageResource(R.drawable.ic_favorite_withe);
+                favStatus = false;
+            }
+        }
+        }
         favItem = new MovieFavItem(poster, title, imdbId, favStatus.toString(), rating, desc);
     }
 

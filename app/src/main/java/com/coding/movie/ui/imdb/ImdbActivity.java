@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -51,6 +52,7 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View {
     private FavDB favDB;
     private FavAdapter adapter;
     private ArrayList<MovieFavItem> movieFavItemArrayList;
+    //endregion
 
 
     @Override
@@ -69,18 +71,30 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View {
         rvMovieList.setHasFixedSize(true);
         rvMovieList.setLayoutManager(new LinearLayoutManager(mContext));
         favDB = new FavDB(mContext);
-        rvMovieList.setVisibility(View.VISIBLE);
-        tvEmpty.setVisibility(View.INVISIBLE);
+//        favDB.deleteDatabase(mContext);
         movieFavItemArrayList = new ArrayList<>();
         movieFavItemArrayList = favDB.readCourses();
-        adapter = new FavAdapter(movieFavItemArrayList,mContext);
+        int size = movieFavItemArrayList.size();
+        if (size == 0) {
+            rvMovieList.setVisibility(View.INVISIBLE);
+            tvEmpty.setVisibility(View.VISIBLE);
+        } else {
+            tvEmpty.setVisibility(View.INVISIBLE);
+            rvMovieList.setVisibility(View.VISIBLE);
+        }
+        adapter = new FavAdapter(movieFavItemArrayList, mContext, new FavAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(MovieFavItem movieFavItemArrayList) {
+                Intent intent = new Intent(mContext, MovieActivity.class);
+                intent.putExtra("Movie", movieFavItemArrayList.getTitle());
+                startActivity(intent);
+                finish();
+            }
+        });
         rvMovieList.setHasFixedSize(true);
         rvMovieList.setLayoutManager(new GridLayoutManager(mContext, 2));
         rvMovieList.setAdapter(adapter);
-
-
     }
-
 
 
     //#region click

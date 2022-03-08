@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FavDB extends SQLiteOpenHelper {
 
@@ -54,7 +55,7 @@ public class FavDB extends SQLiteOpenHelper {
         cv.put(MOVIE_IMAGE, movie_image);
         cv.put(MOVIE_TITLE, movie_title);
         cv.put(KEY_ID, id);
-        //cv.put(FAVORITE_STATUS,fav_status);
+        cv.put(FAVORITE_STATUS,fav_status);
         cv.put(MOVIE_RATING, movie_rating);
         cv.put(MOVIE_DESCRIPTION, movie_desc);
         db.insert(TABLE_NAME, null, cv);
@@ -68,28 +69,41 @@ public class FavDB extends SQLiteOpenHelper {
         return db.rawQuery(sql, null, null);
     }
 
-//    // read all data
-//    public Cursor read_all_data(String id) {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        String sql = "select * from " + TABLE_NAME + " where " + KEY_ID+"="+id+"";
-//        return db.rawQuery(sql,null,null);
-//    }
-
     // remove line from database
     public void remove_fav(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = "UPDATE " + TABLE_NAME + " SET  " + FAVORITE_STATUS + " ='0' WHERE " + KEY_ID + "=" + id + "";
-        db.execSQL(sql);
-        Log.d("remove", id.toString());
+        db.delete(TABLE_NAME, KEY_ID + " = ?",new String[]{id} );
+        db.close();
 
     }
-
-    // select all favorite list
 
     public Cursor select_all_favorite_list() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE " + FAVORITE_STATUS + " ='1'";
         return db.rawQuery(sql, null, null);
+    }
+
+    public ArrayList<MovieFavItem> search(String keyword) {
+        ArrayList<MovieFavItem> movieFavItems = null;
+        try {
+            SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from " + TABLE_NAME + " where " + KEY_ID + " like ?", new String[] { "%" + keyword + "%" });
+            if (cursor.moveToFirst()) {
+                movieFavItems = new ArrayList<MovieFavItem>();
+                do {
+
+                    movieFavItems.add(new MovieFavItem(cursor.getString(2),
+                            cursor.getString(1),
+                            cursor.getString(0),
+                            cursor.getString(5),
+                            cursor.getString(3),
+                            cursor.getString(4)));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            movieFavItems = null;
+        }
+        return movieFavItems;
     }
 
     // we have created a new method for reading all the courses.
