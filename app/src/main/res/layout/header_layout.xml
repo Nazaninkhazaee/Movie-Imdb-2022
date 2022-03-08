@@ -25,8 +25,9 @@
             android:fontFamily="cursive"
             android:lineSpacingExtra="5sp"
             android:text="@string/imdb"
-            android:textColor="@color/white"
-            android:textSize="21sp"
+            android:textColor="@color/color_yellow"
+            android:textSize="24sp"
+            android:textStyle="bold"
             android:padding="@dimen/_8sdp"
             tools:layout_editor_absoluteX="180dp"
             tools:layout_editor_absoluteY="15dp" />

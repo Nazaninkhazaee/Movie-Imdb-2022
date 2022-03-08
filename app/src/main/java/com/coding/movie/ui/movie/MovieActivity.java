@@ -1,6 +1,7 @@
 package com.coding.movie.ui.movie;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -67,17 +68,14 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
         movieName = getIntent().getStringExtra("Movie");
         btnAddFavorite.setEnabled(false);
         favDB = new FavDB(mContext);
-        //create table on first
-        boolean firstStart = Hawk.get("firstStart", true);
-        if (firstStart) {
-            createTableOnFirstStart();
-        }
         presenter.search(movieName);
     }
 
     //#region click
     @OnClick(R.id.btn_back)
     void setBtnBack() {
+        Intent intent = new Intent(mContext, ImdbActivity.class);
+        startActivity(intent);
         finish();
     }
 
@@ -92,8 +90,14 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
             btnAddFavorite.setImageResource(R.drawable.ic_favorite_red);
             favStatus = true;
             Hawk.put("MovieId", imdbId);
-            favDB.insertIntoTheDatabase(favItem.getTitle(), favItem.getImageResourse(),
-                    favItem.getKey_id(), favItem.getRating(), favItem.getDesc(), favItem.getFavStatus().toString());
+
+            favDB.insertIntoTheDatabase(
+                    favItem.getImageResourse(),
+                    favItem.getTitle(),
+                    favItem.getKey_id(),
+                    favItem.getFavStatus().toString(),
+                    favItem.getRating(),
+                    favItem.getDesc());
         }
     }
 
@@ -126,7 +130,7 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
             favStatus = false;
         }
 
-        favItem = new MovieFavItem(poster, title, imdbId, favStatus, rating, desc);
+        favItem = new MovieFavItem(poster, title, imdbId, favStatus.toString(), rating, desc);
     }
 
     @Override
@@ -163,11 +167,6 @@ public class MovieActivity extends BaseActivity implements MovieContract.View {
     @Override
     public void onWebResponseError(ErrorWebModel error) {
         WebServiceHelper.showDialogError(error.getMessage(), mActivity, mContext);
-    }
-
-    private void createTableOnFirstStart() {
-        favDB.insertEmpty();
-        Hawk.put("firstStart", false);
     }
 
 }

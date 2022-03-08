@@ -18,4 +18,5 @@
     <color name="transparent">#00000000</color>
     <color name="silver">#cdd5db</color>
     <color name="color_red">#f84f50</color>
+    <color name="color_yellow">#EAD200</color>
 </resources>

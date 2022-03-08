@@ -5,11 +5,16 @@ public class MovieFavItem {
     private String imageResourse;
     private String title;
     private String key_id;
-    private Boolean favStatus;
+    private String favStatus;
     private String rating;
     private String desc;
 
-    public MovieFavItem(String imageResourse, String title, String key_id, Boolean favStatus, String rating, String desc) {
+    public MovieFavItem(String imageResourse,
+                        String title,
+                        String key_id,
+                        String favStatus,
+                        String rating,
+                        String desc) {
         this.imageResourse = imageResourse;
         this.title = title;
         this.key_id = key_id;
@@ -42,11 +47,11 @@ public class MovieFavItem {
         this.key_id = key_id;
     }
 
-    public Boolean getFavStatus() {
+    public String getFavStatus() {
         return favStatus;
     }
 
-    public void setFavStatus(Boolean favStatus) {
+    public void setFavStatus(String favStatus) {
         this.favStatus = favStatus;
     }
 
