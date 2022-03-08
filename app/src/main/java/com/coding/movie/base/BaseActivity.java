@@ -11,14 +11,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.coding.movie.R;
-import com.google.android.material.snackbar.Snackbar;
+import com.orhanobut.hawk.Hawk;
 
 import butterknife.ButterKnife;
 
@@ -44,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
         mContext = this;
         initializePresenter();
         ButterKnife.bind(this);
+        Hawk.init(mContext).build();
         mProgress = new ProgressDialog(mContext);
         mProgress.setMessage(mContext.getResources().getString(R.string.please_wait));
         mProgress.setCanceledOnTouchOutside(false);

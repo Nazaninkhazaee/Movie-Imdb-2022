@@ -1,12 +1,9 @@
 package com.coding.movie.ui.imdb;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,7 +13,6 @@ import android.widget.TextView;
 import com.coding.movie.R;
 import com.coding.movie.base.BaseActivity;
 import com.coding.movie.model.ErrorWebModel;
-import com.coding.movie.model.search.SearchMoviesWebModels;
 import com.coding.movie.ui.movie.MovieActivity;
 import com.coding.movie.utils.WebServiceHelper;
 
@@ -39,6 +35,7 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View{
     EditText etSearch;
     ImdbContract.Presenter presenter;
 
+
     @Override
     protected void initializePresenter() {
         presenter = new ImdbPresenter();
@@ -52,6 +49,8 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View{
 
     @Override
     protected void init() {
+        rvMovieList.setHasFixedSize(true);
+        rvMovieList.setLayoutManager(new LinearLayoutManager(mContext));
     }
 
 
@@ -106,4 +105,5 @@ public class ImdbActivity extends BaseActivity implements ImdbContract.View{
     public void onWebResponseError(ErrorWebModel error) {
         WebServiceHelper.showDialogError(error.getMessage(), mActivity, mContext);
     }
+
 }
